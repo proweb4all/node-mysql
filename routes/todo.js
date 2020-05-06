@@ -32,9 +32,12 @@ router.post('/', async (req, res) => {
 })
 
 // Изменение задачи
-router.put('/', (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
-
+    const todo = await Todo.findByPk(+req.params.id)
+    todo.done = req.body.done
+    await todo.save()
+    res.status(200).json({todo})
   } catch (e) {
     console.log(e)
     res.status(500).json({
@@ -44,9 +47,16 @@ router.put('/', (req, res) => {
 })
 
 // Удаление задачи
-router.delete('/', (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-
+    const todos = await Todo.findAll({
+      where: {
+        id: +req.params.id
+      }
+    })
+    const todo = todos[0]
+    await todo.destroy()
+    res.status(204).json({})
   } catch (e) {
     console.log(e)
     res.status(500).json({
